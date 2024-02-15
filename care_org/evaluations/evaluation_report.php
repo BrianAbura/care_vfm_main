@@ -443,6 +443,23 @@ else{
                  <td class="text-semibold text-pink text-lg"><?php echo number_format($evaluated_total);?><br/></td>
                 <?php } ?>
             </tr>
+            <tr>
+            <th></th>
+        <th style="width:25%" class="text-center">Supporting Evaluation Documents</th>
+            <?php
+            foreach($eval_members as $eval_member){
+                    $evaluation_file = DB::queryFirstRow('SELECT * from financial_evaluations where tender_id=%s AND stage=%s AND vendor_id=%s AND user_id=%s', $tender_id, 3, $eval['vendor_id'], $eval_member['user_id']);
+                    if(empty($evaluation_file['eval_doc'])){
+            ?>
+                <td class="text-semibold text-danger h6"><i>No file attached</i><br/></td>
+             <?php 
+                }
+                else{
+                    $file = str_replace($BASEPATH, '..', $evaluation_file['eval_doc']);
+             ?>
+                <td><a href="<?php echo $file;?>" target="_blank" class="btn-link text-semibold text-success h6"><i class="fa fa-cloud-download"></i> View document</a><br/></td>
+            <?php } } ?>
+        </tr>
         </tr>
            <?php } ?>
             <?php

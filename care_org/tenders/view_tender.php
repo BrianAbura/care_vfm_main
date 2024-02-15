@@ -275,7 +275,10 @@ if($tender['solicitation_method'] != $tender['cur_method']){
     <tr>
     <th>No</th>
     <th>Description</th>
-    <th>Category</th>
+    <th>Category (Level 1)</th>
+    <th>Category (Level 2)</th>
+    <th>Category (Level 3)</th>
+    <th>Category (Level 4)</th>
     <th>Unit of Measure</th>
     <th>Quantity</th>
     <th>Estimated Unit Price</th>
@@ -286,6 +289,11 @@ if($tender['solicitation_method'] != $tender['cur_method']){
 $items = DB::query('SELECT * from requisition_items where requisition_number=%s', $requisition['requisition_number']);
 $cnt = 1;
 foreach($items as $item){
+    $cat1 = DB::queryFirstRow('SELECT * from level1_category where id=%s', $item['category_1']);
+    $cat2 = DB::queryFirstRow('SELECT * from level2_category where id=%s', $item['category_2']);
+    $cat3 = DB::queryFirstRow('SELECT * from level3_category where id=%s', $item['category_3']);
+    $cat4 = DB::queryFirstRow('SELECT * from level4_category where id=%s', $item['category_4']);
+    
     if(!empty($item['quantity']) || !empty($item['price'])){
         $qty = $item['quantity'];
         $price = $item['price'];
@@ -297,8 +305,11 @@ foreach($items as $item){
 ?>
 <tr>
     <td><p class="form-control prices"><?php echo $cnt;?></p></td>
-    <td><p class="form-control prices"><?php echo $item['description'];?></p></td>
-    <td><p class="form-control prices"><?php echo $item['category'];?></p></td>
+    <td style="padding-right:10em" ><p class="form-control prices"><?php echo $item['description'];?></p></td>
+    <td><p class="form-control prices"><?php echo $cat1['description'];?></td>
+    <td><p class="form-control prices"><?php echo $cat2['description'];?></td>
+    <td><p class="form-control prices"><?php echo $cat3['description'];?></td>
+    <td><p class="form-control prices"><?php echo $cat4['description'];?></td>
     <td><p class="form-control prices"><?php echo $item['unit_of_measure'];?></p></td>
     <td><p class="form-control prices"><?php echo number_format($qty);?></p></td>
     <td><p class="form-control prices"><?php echo number_format($price);?></p></td>

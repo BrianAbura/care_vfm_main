@@ -403,7 +403,10 @@ else{
 					<tr>
 					<th>No</th>
 					<th>Description</th>
-					<th>Category</th>
+					<th>Category (Level 1)</th>
+					<th>Category (Level 2)</th>
+					<th>Category (Level 3)</th>
+					<th>Category (Level 4)</th>
 					<th>Unit of Measure</th>
 					<th>Quantity</th>
 					<th>Estimated Unit Price</th>
@@ -414,7 +417,10 @@ else{
 					$items = DB::query('SELECT * from requisition_items where requisition_number=%s', $requisition['requisition_number']);
 					$cnt = 1;
 					foreach($items as $item){
-						$unspsc = DB::queryFirstRow('SELECT * from unspsc where fam_code=%s', $item['category']);
+						$cat1 = DB::queryFirstRow('SELECT * from level1_category where id=%s', $item['category_1']);
+						$cat2 = DB::queryFirstRow('SELECT * from level2_category where id=%s', $item['category_2']);
+						$cat3 = DB::queryFirstRow('SELECT * from level3_category where id=%s', $item['category_3']);
+						$cat4 = DB::queryFirstRow('SELECT * from level4_category where id=%s', $item['category_4']);
 						if(!empty($item['quantity']) || !empty($item['price'])){
 							$qty = $item['quantity'];
 							$price = $item['price'];
@@ -426,8 +432,11 @@ else{
 					?>
 					<tr>
 						<td><?php echo $cnt;?></td>
-						<td><?php echo $item['description'];?></td>
-						<td><?php echo $unspsc['description'];?></td>
+						<td style="padding-right:10em"><?php echo $item['description'];?></td>
+						<td><?php echo $cat1['description'];?></td>
+						<td><?php echo $cat2['description'];?></td>
+						<td><?php echo $cat3['description'];?></td>
+						<td><?php echo $cat4['description'];?></td>
 						<td><?php echo $item['unit_of_measure'];?></td>
 						<td><?php echo number_format($qty);?></td>
 						<td><?php echo number_format($price);?></td>
@@ -515,7 +524,7 @@ else{
 include $DIR."/footers.php"; 
 ?>
 <script>
-//Operations on the actions
+	//Operations on the actions
 	var method = document.getElementById("solicitation_method");
 	var sole = document.getElementById("sole_vendor_div");
 	var multiple = document.getElementById("multiple_vendors_div");

@@ -367,7 +367,7 @@ elseif($stage == 2){ // <<<< Technical Stage Ends Here With the Form
         <?php } ?>
     </tr>
     <tr>
-        <td></td>
+        <td></td><td></td>
             <?php 
             foreach($eval_members as $eval_member){
                 $all_eval = DB::queryFirstRow('SELECT * from evaluations where tender_id=%s AND stage=%s AND vendor_id=%s and user_id=%s', $tender_id, $stage, $eval['vendor_id'], $eval_member['user_id']);
@@ -558,11 +558,10 @@ elseif($stage == 3){ // <<<< Financial Stage Ends Here With the Form
         <th style="width:25%" class="text-center">Evaluated Total Bid Price(<?php echo $cur;?>)</th>
             <?php
             foreach($eval_members as $eval_member){
-                    $evaluation_decision = DB::queryFirstRow('SELECT * from financial_evaluations where tender_id=%s AND stage=%s AND vendor_id=%s AND user_id=%s', $tender_id, $stage, $eval['vendor_id'], $eval_member['user_id']);
-                    $sub_total = $evaluation_decision['cur_sub_total'];
-                    $vat = $evaluation_decision['cur_vat'];
-                    $corrected_vat = $evaluation_decision['eval_vat'];
-
+                $evaluation_decision = DB::queryFirstRow('SELECT * from financial_evaluations where tender_id=%s AND stage=%s AND vendor_id=%s AND user_id=%s', $tender_id, $stage, $eval['vendor_id'], $eval_member['user_id']);
+                $sub_total = $evaluation_decision['cur_sub_total'];
+                $vat = $evaluation_decision['cur_vat'];
+                $corrected_vat = $evaluation_decision['eval_vat'];
                     if($corrected_vat){
                         $evaluated_total = ($sub_total * ($corrected_vat/100)) + $sub_total;
                     }
@@ -574,6 +573,23 @@ elseif($stage == 3){ // <<<< Financial Stage Ends Here With the Form
             <?php } ?>
         </tr>
         <tr>
+        <th style="width:25%" class="text-center">Supporting Evaluation Documents</th>
+            <?php
+            foreach($eval_members as $eval_member){
+                $evaluation_file = DB::queryFirstRow('SELECT * from financial_evaluations where tender_id=%s AND stage=%s AND vendor_id=%s AND user_id=%s', $tender_id, $stage, $eval['vendor_id'], $eval_member['user_id']);
+                if(empty($evaluation_file['eval_doc'])){
+            ?>
+                <td class="text-semibold text-danger h6"><i>No file attached</i><br/></td>
+             <?php 
+                }
+                else{
+                    $file = str_replace($BASEPATH, '..', $evaluation_file['eval_doc']);
+             ?>
+                <td><a href="<?php echo $file;?>" target="_blank" class="btn-link text-semibold text-success h6"><i class="fa fa-cloud-download"></i> View document</a><br/></td>
+            <?php } } ?>
+        </tr>
+        <tr>
+        <th></th>
         <th></th>
             <?php 
             foreach($eval_members as $eval_member){

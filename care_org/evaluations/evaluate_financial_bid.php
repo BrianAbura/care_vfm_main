@@ -205,6 +205,28 @@ $vendor = DB::queryFirstRow('SELECT * from vendors where vendor_id=%s', $vendor_
             <td><input type="text"style="width:50%" class="form-control prices text-lg text-bold text-primary" id="evaluted_total" value="<?php echo number_format($grand_total);?>" name="evaluted_total"/></td>
             </tr>
 
+            <tr>
+            <td><h5 class="text-center">Supporting Evaluation Document</h5></td>
+            <td>
+            <div class="form-group col-md-12">
+                <div class="fileupload fileupload-new" data-provides="fileupload">
+				<div class="input-append">
+					<div class="uneditable-input">
+					<span class="fileupload-preview" style="font-size: 12px; color:blue"></span>
+					</div>
+					<span class="btn btn-default btn-file">
+					<span class="btn btn-md btn-mint fa fa-edit fileupload-exists" title="Change Attachment"></span>
+					<span class="fileupload-new btn btn-primary fa fa-upload"> Select file</span>
+					<input type="file" id="evaluation_doc_upload" name="evaluation_doc_upload" onchange="ValidateSingleInput(this);"/>
+					</span>
+					<a href="#" class="btn btn-md btn-danger demo-pli-trash fileupload-exists" title="Remove Attachment" data-dismiss="fileupload"></a>
+					<p class="help-block text-success">Accepted Formats: .pdf, .xlsx or .xls only</p>
+				</div>
+				</div>
+                </div>
+            </td>
+            </tr>
+
         <?php  } //End Financials?>
 </tbody>
 </table>
@@ -237,6 +259,39 @@ $vendor = DB::queryFirstRow('SELECT * from vendors where vendor_id=%s', $vendor_
 /*** Include the Global Footer and Java Scripts */
 include $DIR."/footers.php"; 
 ?>
+
+<script>
+     //Image Validation
+var _validLogoExtensions = [".pdf", ".xlsx", ".xls"];   
+function ValidateSingleInput(oInput) {
+    if (oInput.type == "file") {
+        var sFileName = oInput.value;
+         if (sFileName.length > 0) {
+            var blnValid = false;
+            for (var j = 0; j < _validLogoExtensions.length; j++) {
+                var sCurExtension = _validLogoExtensions[j];
+                if (sFileName.substr(sFileName.length - sCurExtension.length, sCurExtension.length).toLowerCase() == sCurExtension.toLowerCase()) {
+                    blnValid = true;
+                    break;
+                }
+            }
+            if (!blnValid) {
+                $.niftyNoty({
+                    type: 'danger',
+                    container : 'floating',
+                    title : 'Error!',
+                    message : 'Sorry, the file type is invalid, allowed file extensions are: pdf, xlsx and xls',
+                    closeBtn : true,
+                    timer : 7000,
+                });
+                oInput.value = "";
+                return false;
+            }
+        }
+    }
+    return true;
+}
+</script>
 
 <script>
 //Tender Notice Tab

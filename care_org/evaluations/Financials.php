@@ -2,17 +2,8 @@
 $BASEPATH = dirname(__DIR__);
 require_once($BASEPATH.'/validator.php');
 
-$formAction = filter_var(( isset( $_REQUEST['formAction'] ) )?  $_REQUEST['formAction']: null, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-$token = filter_var(( isset( $_REQUEST['token'] ) )?  $_REQUEST['token']: null, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-$tender_id = filter_var(( isset( $_REQUEST['tender_id'] ) )?  $_REQUEST['tender_id']: null, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-$vendor_id = filter_var(( isset( $_REQUEST['vendor_id'] ) )?  $_REQUEST['vendor_id']: null, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-//Financials
-$cur_sub_total = filter_var(( isset( $_REQUEST['cur_sub_total'] ) )?  $_REQUEST['cur_sub_total']: null, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-$cur_vat = filter_var(( isset( $_REQUEST['cur_vat'] ) )?  $_REQUEST['cur_vat']: null, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-$corrected_vat = filter_var(( isset( $_REQUEST['corrected_vat'] ) )?  $_REQUEST['corrected_vat']: null, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-
-class Financials{
+Class Financials{
     public $tender_id;
 
     public function evaluate_financials($financials, $status){
@@ -45,8 +36,30 @@ class Financials{
     }
 }
 
+$formAction = filter_var(( isset( $_REQUEST['formAction'] ) )?  $_REQUEST['formAction']: null, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+$token = filter_var(( isset( $_REQUEST['token'] ) )?  $_REQUEST['token']: null, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+$tender_id = filter_var(( isset( $_REQUEST['tender_id'] ) )?  $_REQUEST['tender_id']: null, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+$vendor_id = filter_var(( isset( $_REQUEST['vendor_id'] ) )?  $_REQUEST['vendor_id']: null, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+//Financials
+$cur_sub_total = filter_var(( isset( $_REQUEST['cur_sub_total'] ) )?  $_REQUEST['cur_sub_total']: null, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+$cur_vat = filter_var(( isset( $_REQUEST['cur_vat'] ) )?  $_REQUEST['cur_vat']: null, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+$corrected_vat = filter_var(( isset( $_REQUEST['corrected_vat'] ) )?  $_REQUEST['corrected_vat']: null, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+$target_dir = $BASEPATH."/attachments/";
+
+
 $eval = new Financials;
 $eval->tender_id = $tender_id;
+
+$evaluation_doc = basename($_FILES["evaluation_doc_upload"]["name"]);
+if(empty($evaluation_doc)){
+    $evaluation_doc = "";
+}
+else{
+    $evaluationName = 'Eval_doc-'.$tender_id.'-'.$vendor_id.'-'.$_SESSION['user_id'].'.' . strtolower(pathinfo($evaluation_doc,PATHINFO_EXTENSION));
+    $evaluation_doc = $target_dir . $evaluationName;
+    move_uploaded_file($_FILES["evaluation_doc_upload"]["tmp_name"], $target_dir . $evaluationName);
+}
 
 $add_financials = array(
     'tender_id'     => $tender_id,
@@ -56,6 +69,7 @@ $add_financials = array(
     'cur_sub_total' => $cur_sub_total,
     'cur_vat'       => $cur_vat,
     'eval_vat'     => $corrected_vat,
+    'eval_doc'     => $evaluation_doc
 );
 
 if(isset($_REQUEST['token'])) {
